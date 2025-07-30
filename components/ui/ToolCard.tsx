@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { DivideIcon as LucideIcon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import { ArrowRight } from 'lucide-react';
 
 interface ToolCardProps {
