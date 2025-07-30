@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    from_name: '',
+    reply_to: '',
     message: ''
   });
   const [loading, setLoading] = useState(false);
@@ -20,24 +21,18 @@ export default function ContactPage() {
     setSuccess(false);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send message');
-      }
+      await emailjs.send(
+        'service_y3vgnzg', // Your EmailJS service ID
+        'template_4a4xpgp', // Your EmailJS template ID
+        formData,
+        'BsmYbaGJmSXBbgiAJ' // Your EmailJS public key
+      );
 
       setSuccess(true);
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ from_name: '', reply_to: '', message: '' });
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to send message');
+      console.error('Email error:', error);
+      setError('Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -85,23 +80,25 @@ export default function ContactPage() {
               )}
 
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                <label htmlFor="from_name" className="block text-sm font-medium text-gray-700">Name</label>
                 <input
                   type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  id="from_name"
+                  name="from_name"
+                  value={formData.from_name}
+                  onChange={(e) => setFormData({ ...formData, from_name: e.target.value })}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                <label htmlFor="reply_to" className="block text-sm font-medium text-gray-700">Email</label>
                 <input
                   type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  id="reply_to"
+                  name="reply_to"
+                  value={formData.reply_to}
+                  onChange={(e) => setFormData({ ...formData, reply_to: e.target.value })}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   required
                 />
@@ -110,6 +107,7 @@ export default function ContactPage() {
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
                 <textarea
                   id="message"
+                  name="message"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={4}
