@@ -21,7 +21,7 @@ export default function ContactPage() {
     try {
       const result = await emailjs.sendForm(
         'service_8p28wph',
-        'template_4a4xpgp',
+        'template_gyp5hi3',
         form.current,
         'BsmYbaGJmSXBbgiAJ'
       );
