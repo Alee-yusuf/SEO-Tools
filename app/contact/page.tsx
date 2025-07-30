@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
 export default function ContactPage() {
+  useEffect(() => {
+    emailjs.init('BsmYbaGJmSXBbgiAJ');
+  }, []);
   const [formData, setFormData] = useState({
     from_name: '',
     reply_to: '',
@@ -21,18 +24,31 @@ export default function ContactPage() {
     setSuccess(false);
 
     try {
-      await emailjs.send(
-        'service_y3vgnzg', // Your EmailJS service ID
-        'template_4a4xpgp', // Your EmailJS template ID
-        formData,
-        'BsmYbaGJmSXBbgiAJ' // Your EmailJS public key
+      console.log('Starting email submission...', formData);
+      
+      const result = await emailjs.send(
+        'service_y3vgnzg',
+        'template_4a4xpgp',
+        {
+          from_name: formData.from_name,
+          reply_to: formData.reply_to,
+          message: formData.message,
+          to_email: 'aleeyusuf35000@gmail.com'
+        },
+        'BsmYbaGJmSXBbgiAJ'
       );
 
+      console.log('Email sent successfully:', result);
       setSuccess(true);
       setFormData({ from_name: '', reply_to: '', message: '' });
-    } catch (error) {
-      console.error('Email error:', error);
-      setError('Failed to send message. Please try again.');
+    } catch (error: any) {
+      console.error('Email error details:', {
+        error,
+        message: error.message,
+        text: error.text,
+        formData
+      });
+      setError(error.text || 'Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }
